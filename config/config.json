@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": "rifah#3124",
+    "database": "carpool",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": "rifah#3124",
+    "database": "carpool_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "rifah#3124",
+    "database": "carpool_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
