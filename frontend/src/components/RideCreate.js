@@ -7,24 +7,34 @@ const RideCreate = () => {
     const [pickupLocation, setPickupLocation] = useState('');
     const [dropOffLocation, setDropOffLocation] = useState('');
     const [availableSeats, setAvailableSeats] = useState('');
+    const [rideTime, setRideTime] = useState(''); // New state for ride time
+
     const [message, setMessage] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const localDate = new Date(rideTime); // This gets the input as local time
+        const offset = 5.5 * 60 * 60 * 1000; // IST is UTC + 5:30 hours
+        const istDate = new Date(localDate.getTime() + offset); // Add IST offset
+        const istISOString = istDate.toISOString(); // Convert to ISO string
         const driverId = localStorage.getItem('driverId');
         const token = localStorage.getItem('token');
         if (!token) {
             setMessage('You must be logged in to create a ride.');
             return;
         }
-        console.log('Submitted Data:', { token,driverId,pickupLocation, dropOffLocation, availableSeats });
-
+        console.log('Submitted Data:', { token,driverId,pickupLocation, dropOffLocation, availableSeats,rideTime });
+        console.log('Request URL:', 'http://localhost:5000/api/rides/search');
+        console.log('Request Headers:', { Authorization: `Bearer ${token}` });
+       // console.log('Request Body:', { pickup, dropoff, rideTime: istISOString });
         if (!driverId) {
         setMessage('Driver ID not found.');
         return;
     }
         try {
             console.log('Submitted Data:', { pickupLocation, dropOffLocation, availableSeats });
+            const formattedRideTime = rideTime.replace('T', ' ').split('.')[0]; // Convert to 'YYYY-MM-DD HH:MM:SS'
+
             const response = await axios.post(
                 'http://localhost:5000/api/rides/create',
                 {
@@ -32,6 +42,7 @@ const RideCreate = () => {
                     pickupLocation,
                     dropOffLocation,
                     availableSeats,
+                    rideTime: formattedRideTime,
                 },
                 {
                     headers: {
@@ -43,6 +54,7 @@ const RideCreate = () => {
             setPickupLocation('');
             setDropOffLocation('');
             setAvailableSeats('');
+            setRideTime('');
         } catch (error) {
             console.error('Error creating ride:', error);
             if (error.response?.status === 400) {
@@ -85,6 +97,15 @@ const RideCreate = () => {
                         min="1"
                         value={availableSeats}
                         onChange={(e) => setAvailableSeats(e.target.value)}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Ride Time:</label> {/* New input for ride time */}
+                    <input
+                        type="datetime-local" // This creates a date-time picker
+                        value={rideTime}
+                        onChange={(e) => setRideTime(e.target.value)}
                         required
                     />
                 </div>

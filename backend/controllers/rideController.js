@@ -39,8 +39,8 @@ const pool = require('../db'); // Import the DB connection
         res.status(500).json({ error: err.message });
     }
 };*/
-exports.createRide = async (req, res) => {
-    const { driverId, pickupLocation, dropOffLocation, availableSeats } = req.body;
+/*exports.createRide = async (req, res) => {
+    const { driverId, pickupLocation, dropOffLocation, availableSeats,rideTime } = req.body;
 
     try {
         // Validate locations
@@ -61,10 +61,48 @@ exports.createRide = async (req, res) => {
 
         // Insert the ride into the database
         const query = `
-            INSERT INTO Rides (driver_Id, pickup_location, drop_location, available_seats)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO Rides (driver_Id, pickup_location, drop_location, available_seats,ride_time)
+            VALUES (?, ?, ?,?,?)
         `;
-        const [result] = await pool.promise().query(query, [driverId, pickupLocation, dropOffLocation, availableSeats]);
+        const [result] = await pool.promise().query(query, [driverId, pickupLocation, dropOffLocation, availableSeats,rideTime]);
+
+        res.status(201).json({ message: 'Ride created successfully', rideId: result.insertId });
+    } catch (err) {
+        console.error('Error creating ride:', err);
+        res.status(500).json({ error: err.message });
+    }
+};*/
+exports.createRide = async (req, res) => {
+    const { driverId, pickupLocation, dropOffLocation, availableSeats, rideTime } = req.body;
+
+    try {
+        // Validate locations
+        const pickupValidation = await validateLocation(pickupLocation);
+        const dropOffValidation = await validateLocation(dropOffLocation);
+
+        if (!pickupValidation.isValid || !dropOffValidation.isValid) {
+            return res.status(400).json({ error: 'Invalid pickup or drop-off location.' });
+        }
+
+        // Ensure driverId exists
+        const driverQuery = `SELECT * FROM Users WHERE id = ?`;
+        const [driver] = await pool.promise().query(driverQuery, [driverId]);
+
+        if (driver.length === 0) {
+            return res.status(404).json({ error: 'Driver not found.' });
+        }
+        const localDate = new Date(rideTime); // Interpret the input as local time
+        const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000); // Convert to UTC
+        const formattedRideTime = utcDate.toISOString().slice(0, 19).replace('T', ' ');
+        // Format ride_time to MySQL DATETIME format (YYYY-MM-DD HH:MM:SS)
+       // const formattedRideTime = new Date(rideTime).toISOString().slice(0, 19).replace('T', ' ');
+
+        // Insert the ride into the database
+        const query = `
+            INSERT INTO Rides (driver_Id, pickup_location, drop_location, available_seats, ride_time)
+            VALUES (?, ?, ?, ?, ?)
+        `;
+        const [result] = await pool.promise().query(query, [driverId, pickupLocation, dropOffLocation, availableSeats, formattedRideTime]);
 
         res.status(201).json({ message: 'Ride created successfully', rideId: result.insertId });
     } catch (err) {
@@ -72,6 +110,7 @@ exports.createRide = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
 /*
 // Function to search for matching rides
 exports.matchRides = async (req, res) => {
@@ -87,16 +126,25 @@ exports.matchRides = async (req, res) => {
     }
 };*/
 exports.matchRides = async (req, res) => {
-    const { pickup, dropoff } = req.body;
+    const { pickup, dropoff, rideTime:formattedRideTime} = req.body;
 
     try {
         const query = `
             SELECT * FROM Rides
-            WHERE pickup_location = ? AND drop_location = ?
+            WHERE pickup_location LIKE ? 
+              AND drop_location LIKE ? 
+              AND ride_time >= ?
         `;
-        pool.query(query, [pickup, dropoff], (err, rows) => {
+        console.log('SQL Query:', query);
+        console.log('Query Params:', [`%${pickup}%`, `%${dropoff}%`, formattedRideTime]); // Log the parameters for debugging
+
+        // Use the rideTime directly from the frontend
+        pool.query(query, [`%${pickup}%`, `%${dropoff}%`, formattedRideTime], (err, rows) => {
             if (err) {
                 return res.status(500).json({ error: err.message });
+            }
+            if (rows.length === 0) {
+                return res.status(404).json({ message: 'No rides found for the given locations and time.' });
             }
             res.status(200).json({ matchingRides: rows });
         });
@@ -104,6 +152,7 @@ exports.matchRides = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 
 // Function to calculate the distance (this should already be defined in your controller)
