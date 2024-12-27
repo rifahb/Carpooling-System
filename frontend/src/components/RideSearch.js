@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import RideBook from './RideBook';
 
 const RideSearch = () => {
     const [pickup, setPickup] = useState('');
@@ -94,11 +95,13 @@ const RideSearch = () => {
 
         return (
             <li key={index}>
-                Pickup: {ride.pickup_location}, Drop-off: {ride.drop_location}, Available Seats: {ride.available_seats}, Time: {localRideTime}
-            </li>
-        );
-    })}
-</ul>   
+                 Pickup: {ride.pickup_location}, Drop-off: {ride.drop_location},
+                            Available Seats: {ride.available_seats}, Time: {localRideTime},price:{ride.price}
+                            <button onClick={() => RideBook(ride.id)}>Book</button> 
+                        </li>
+                    );
+                })}
+            </ul>
         </div>
     );
 };

@@ -4,74 +4,7 @@ const { validateLocation } = require('./locationValidator');
 // Import your models if needed (e.g., for creating a ride in the database)
 const { Ride } = require('../../models');
 const pool = require('../db'); // Import the DB connection
-// Function to create a new ride
-/*exports.createRide = async (req, res) => {
-    const { driverId, pickupLocation, dropOffLocation, availableSeats } = req.body;
 
-    try {
-        const ride = await Ride.create({
-            driverId,
-            pickupLocation,
-            dropOffLocation,
-            availableSeats,
-        });
-
-        res.status(201).json({ message: 'Ride created successfully', ride });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};*/
-/*exports.createRide = async (req, res) => {
-    const { driverId, pickupLocation, dropOffLocation, availableSeats } = req.body;
-
-    try {
-        const query = `
-            INSERT INTO Rides (driver_Id, pickup_location, drop_location, available_seats)
-            VALUES (?, ?, ?, ?)
-        `;
-        pool.query(query, [driverId, pickupLocation, dropOffLocation, availableSeats], (err, result) => {
-            if (err) {
-                return res.status(500).json({ error: err.message });
-            }
-            res.status(201).json({ message: 'Ride created successfully', rideId: result.insertId });
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};*/
-/*exports.createRide = async (req, res) => {
-    const { driverId, pickupLocation, dropOffLocation, availableSeats,rideTime } = req.body;
-
-    try {
-        // Validate locations
-        const pickupValidation = await validateLocation(pickupLocation);
-        const dropOffValidation = await validateLocation(dropOffLocation);
-
-        if (!pickupValidation.isValid || !dropOffValidation.isValid) {
-            return res.status(400).json({ error: 'Invalid pickup or drop-off location.' });
-        }
-
-        // Ensure driverId exists
-        const driverQuery = `SELECT * FROM Users WHERE id = ?`;
-        const [driver] = await pool.promise().query(driverQuery, [driverId]);
-
-        if (driver.length === 0) {
-            return res.status(404).json({ error: 'Driver not found.' });
-        }
-
-        // Insert the ride into the database
-        const query = `
-            INSERT INTO Rides (driver_Id, pickup_location, drop_location, available_seats,ride_time)
-            VALUES (?, ?, ?,?,?)
-        `;
-        const [result] = await pool.promise().query(query, [driverId, pickupLocation, dropOffLocation, availableSeats,rideTime]);
-
-        res.status(201).json({ message: 'Ride created successfully', rideId: result.insertId });
-    } catch (err) {
-        console.error('Error creating ride:', err);
-        res.status(500).json({ error: err.message });
-    }
-};*/
 exports.createRide = async (req, res) => {
     const { driverId, pickupLocation, dropOffLocation, availableSeats, rideTime } = req.body;
 
@@ -84,6 +17,18 @@ exports.createRide = async (req, res) => {
             return res.status(400).json({ error: 'Invalid pickup or drop-off location.' });
         }
 
+
+        const { lat: pickupLat, lon: pickupLon } = pickupValidation;
+        const { lat: dropLat, lon: dropLon } = dropOffValidation;
+        // Calculate distance and price
+        const distanceRes = await axios.post('http://localhost:5000/api/rides/calculate-distance', {
+            startLat: pickupLat,
+            startLon: pickupLon,
+            endLat: dropLat,
+            endLon: dropLon,
+        });
+        const { distance } = distanceRes.data;
+        const price = (distance / 1000) * 1;
         // Ensure driverId exists
         const driverQuery = `SELECT * FROM Users WHERE id = ?`;
         const [driver] = await pool.promise().query(driverQuery, [driverId]);
@@ -99,10 +44,10 @@ exports.createRide = async (req, res) => {
 
         // Insert the ride into the database
         const query = `
-            INSERT INTO Rides (driver_Id, pickup_location, drop_location, available_seats, ride_time)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO Rides (driver_Id, pickup_location, drop_location, available_seats, ride_time,price)
+            VALUES (?, ?, ?, ?, ?,?)
         `;
-        const [result] = await pool.promise().query(query, [driverId, pickupLocation, dropOffLocation, availableSeats, formattedRideTime]);
+        const [result] = await pool.promise().query(query, [driverId, pickupLocation, dropOffLocation, availableSeats, formattedRideTime,price.toFixed(2)]);
 
         res.status(201).json({ message: 'Ride created successfully', rideId: result.insertId });
     } catch (err) {
@@ -111,22 +56,35 @@ exports.createRide = async (req, res) => {
     }
 };
 
-/*
-// Function to search for matching rides
-exports.matchRides = async (req, res) => {
-    const { pickup, dropoff } = req.body;
+// exports.matchRides = async (req, res) => {
+//     const { pickup, dropoff, rideTime:formattedRideTime} = req.body;
 
-    try {
-        // Replace this with your actual ride matching logic
-        const matchingRides = await Ride.findAll({ where: { pickup_location: pickup, drop_location: dropoff } });
+//     try {
+//         const query = `
+//             SELECT * FROM Rides
+//             WHERE pickup_location LIKE ? 
+//               AND drop_location LIKE ? 
+//               AND ride_time >= ?
+//         `;
+//         console.log('SQL Query:', query);
+//         console.log('Query Params:', [`%${pickup}%`, `%${dropoff}%`, formattedRideTime]); // Log the parameters for debugging
 
-        res.status(200).json({ matchingRides });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};*/
+//         // Use the rideTime directly from the frontend
+//         pool.query(query, [`%${pickup}%`, `%${dropoff}%`, formattedRideTime], (err, rows) => {
+//             if (err) {
+//                 return res.status(500).json({ error: err.message });
+//             }
+//             if (rows.length === 0) {
+//                 return res.status(404).json({ message: 'No rides found for the given locations and time.' });
+//             }
+//             res.status(200).json({ matchingRides: rows });
+//         });
+//     } catch (err) {
+//         res.status(500).json({ error: err.message });
+//     }
+// };
 exports.matchRides = async (req, res) => {
-    const { pickup, dropoff, rideTime:formattedRideTime} = req.body;
+    const { pickup, dropoff, rideTime: formattedRideTime } = req.body;
 
     try {
         const query = `
@@ -136,23 +94,22 @@ exports.matchRides = async (req, res) => {
               AND ride_time >= ?
         `;
         console.log('SQL Query:', query);
-        console.log('Query Params:', [`%${pickup}%`, `%${dropoff}%`, formattedRideTime]); // Log the parameters for debugging
+        console.log('Query Params:', [`%${pickup}%`, `%${dropoff}%`, formattedRideTime]);
 
-        // Use the rideTime directly from the frontend
-        pool.query(query, [`%${pickup}%`, `%${dropoff}%`, formattedRideTime], (err, rows) => {
+        pool.query(query, [`%${pickup}%`, `%${dropoff}%`, formattedRideTime], async (err, rows) => {
             if (err) {
                 return res.status(500).json({ error: err.message });
             }
             if (rows.length === 0) {
                 return res.status(404).json({ message: 'No rides found for the given locations and time.' });
             }
+
             res.status(200).json({ matchingRides: rows });
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
-
 
 
 // Function to calculate the distance (this should already be defined in your controller)
@@ -181,47 +138,26 @@ exports.calculateDistance = async (req, res) => {
         res.status(500).json({ error: 'Error calculating distance and duration: ' + err.message });
     }
 };
-
-/*
-// Function to book a ride
 exports.bookRide = async (req, res) => {
     const { rideId } = req.body;
-    const userId = req.user.id; // Assuming user is authenticated via JWT
+    const { userId } = req.user;  // Assuming you're using JWT and user info is in req.user
 
     try {
-        // Replace with actual logic for booking a ride
-        // For example, update ride availability or book the ride
-        const ride = await Ride.update({ availableSeats: 0 }, { where: { id: rideId } });
-
-        res.status(200).json({ message: 'Ride booked successfully', ride });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};*/
-exports.bookRide = async (req, res) => {
-    const { rideId } = req.body;
-    const userId = req.user.id; // Assuming the user is authenticated
-
-    try {
-        // Update ride's available seats after booking
+        // Insert the booking into the booked_rides table
         const query = `
-            UPDATE Rides
-            SET available_seats = available_seats - 1
-            WHERE id = ? AND available_seats > 0
+            INSERT INTO booked_rides (ride_id, passenger_id, driver_id, passenger_name, driver_name)
+            SELECT ?, ?, driver_id, (SELECT username FROM users WHERE id = ?), (SELECT username FROM users WHERE id = driver_id)
+            FROM Rides
+            WHERE id = ?
         `;
-        pool.query(query, [rideId], (err, result) => {
-            if (err) {
-                return res.status(500).json({ error: err.message });
-            }
+        const result = await pool.query(query, [rideId, userId, userId, rideId]);
 
-            if (result.affectedRows === 0) {
-                return res.status(400).json({ message: 'Ride is fully booked or does not exist.' });
-            }
-
-            res.status(200).json({ message: 'Ride booked successfully' });
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+        if (result.affectedRows > 0) {
+            res.status(200).json({ message: 'Booking confirmed!' });
+        } else {
+            res.status(404).json({ message: 'Ride not found or booking failed.' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Error booking ride: ' + error.message });
     }
 };
-

@@ -34,5 +34,6 @@ app.use('/api/rides', rideRoutes);
  // Import the map routes
 app.use('/api/maps', mapRoutes);  // Use the route for geocoding
 app.use('/api/users', userRoutes);
+//app.use('/calculateDistance',routedistance);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

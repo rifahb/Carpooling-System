@@ -26,7 +26,8 @@ import Register from './components/Register';
 import Home from './components/Home';
 import RideCreate from './components/RideCreate';  // If you have this component
 import RideSearch from './components/RideSearch'; 
-
+import RideBook from './components/RideBook';
+import SetUserDetails from './components/SetUserDetails';
 const App = () => {
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
@@ -45,6 +46,8 @@ const App = () => {
                     <Route path="/home" element={token ? <Home userName={userName} /> : <Navigate to="/login" />} />
                     <Route path="/create" element={token ? <RideCreate /> : <Navigate to="/login" />} />
                     <Route path="/search" element={token ? <RideSearch /> : <Navigate to="/login" />} />
+                    <Route path="/set-user-details" element={<SetUserDetails />} /> 
+                    <Route path="/book/:rideId" element={token ? <RideBook /> : <Navigate to="/login" />} />
                 </Routes>
             </div>
         </Router>
