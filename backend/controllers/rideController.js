@@ -138,26 +138,38 @@ exports.calculateDistance = async (req, res) => {
         res.status(500).json({ error: 'Error calculating distance and duration: ' + err.message });
     }
 };
+// In your rideController.js
+const db = require('../db'); // Database connection
+
 exports.bookRide = async (req, res) => {
-    const { rideId } = req.body;
-    const { userId } = req.user;  // Assuming you're using JWT and user info is in req.user
+    const { rideId, userId } = req.body; // rideId from the ride details and userId from the logged-in user
 
     try {
-        // Insert the booking into the booked_rides table
-        const query = `
-            INSERT INTO booked_rides (ride_id, passenger_id, driver_id, passenger_name, driver_name)
-            SELECT ?, ?, driver_id, (SELECT username FROM users WHERE id = ?), (SELECT username FROM users WHERE id = driver_id)
-            FROM Rides
-            WHERE id = ?
-        `;
-        const result = await pool.query(query, [rideId, userId, userId, rideId]);
+        // First, fetch the ride details
+        const [ride] = await db.execute('SELECT * FROM rides WHERE id = ?', [rideId]);
 
-        if (result.affectedRows > 0) {
-            res.status(200).json({ message: 'Booking confirmed!' });
-        } else {
-            res.status(404).json({ message: 'Ride not found or booking failed.' });
+        if (!ride) {
+            return res.status(404).json({ message: 'Ride not found' });
         }
+
+        // Check if seats are available
+        if (ride.availableSeats <= 0) {
+            return res.status(400).json({ message: 'No available seats left' });
+        }
+
+        // Update availableSeats
+        await db.execute('UPDATE rides SET availableSeats = availableSeats - 1 WHERE id = ?', [rideId]);
+
+        // Fetch driver details (assuming we have user details)
+        const [driverDetails] = await db.execute('SELECT * FROM userdetails WHERE id = ?', [ride.driverId]);
+
+        res.json({
+            message: 'Ride booked successfully',
+            rideDetails: ride,
+            driverDetails: driverDetails,
+        });
     } catch (error) {
-        res.status(500).json({ error: 'Error booking ride: ' + error.message });
+        console.error('Error booking ride:', error);
+        res.status(500).json({ message: 'Error booking ride', error: error.message });
     }
 };

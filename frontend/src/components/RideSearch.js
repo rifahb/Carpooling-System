@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import RideBook from './RideBook';
-
+import RideSearchResult from './RideSearchResult';
+import { useNavigate } from 'react-router-dom';
 const RideSearch = () => {
     const [pickup, setPickup] = useState('');
     const [dropoff, setDropoff] = useState('');
     const [matchingRides, setMatchingRides] = useState([]);
     const [rideTime, setRideTime] = useState('');
     const [message, setMessage] = useState('');
-
+    const navigate = useNavigate();
+    const handleBookRide = (rideId) => {
+        console.log(`Navigating to RideSearchResult with Ride ID: ${rideId}`);
+        // Navigate to RideSearchResult and pass ride ID as state
+        navigate('/ride-search-result', { state: { rideId, matchingRides } });
+    };
     const handleSearch = async (e) => {
         e.preventDefault();
 
@@ -92,14 +97,13 @@ const RideSearch = () => {
     {matchingRides.map((ride, index) => {
         // Convert UTC time to local time
         const localRideTime = new Date(ride.ride_time).toLocaleString(); // This converts UTC to local time
-
         return (
             <li key={index}>
-                 Pickup: {ride.pickup_location}, Drop-off: {ride.drop_location},
-                            Available Seats: {ride.available_seats}, Time: {localRideTime},price:{ride.price}
-                            <button onClick={() => RideBook(ride.id)}>Book</button> 
-                        </li>
-                    );
+                Pickup: {ride.pickup_location}, Drop-off: {ride.drop_location},
+                Available Seats: {ride.available_seats}, Time: {localRideTime}, Price: {ride.price}
+                <button onClick={() => handleBookRide(ride.id)}>Book</button>
+            </li>
+        );
                 })}
             </ul>
         </div>

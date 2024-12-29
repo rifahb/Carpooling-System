@@ -13,6 +13,6 @@ router.post('/search', matchRides); // Users can search for nearby rides based o
 router.post('/calculate-distance', calculateDistance); // Calculate distance using latitude and longitude
 
 // POST route to book a ride (ensure the user is authenticated)
-router.post('/book', verifyToken, bookRide);  // Apply the verifyToken middleware to ensure the user is logged in
+router.post('/book-ride', bookRide);  // Apply the verifyToken middleware to ensure the user is logged in
 
 module.exports = router;  // Export the router to use it in index.js
