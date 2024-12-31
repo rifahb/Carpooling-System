@@ -138,35 +138,58 @@ exports.calculateDistance = async (req, res) => {
         res.status(500).json({ error: 'Error calculating distance and duration: ' + err.message });
     }
 };
-// In your rideController.js
 const db = require('../db'); // Database connection
 
 exports.bookRide = async (req, res) => {
     const { rideId, userId } = req.body; // rideId from the ride details and userId from the logged-in user
 
     try {
-        // First, fetch the ride details
-        const [ride] = await db.execute('SELECT * FROM rides WHERE id = ?', [rideId]);
+        // Fetch the ride details
+        const [rideResults] = await db.promise().query('SELECT * FROM rides WHERE id = ?', [rideId]);
+        const ride = rideResults[0]; // Extract the first ride from the result set
 
         if (!ride) {
             return res.status(404).json({ message: 'Ride not found' });
         }
 
         // Check if seats are available
-        if (ride.availableSeats <= 0) {
+        if (ride.Available_seats <= 0) { // Match your DB column for available seats
             return res.status(400).json({ message: 'No available seats left' });
         }
 
-        // Update availableSeats
-        await db.execute('UPDATE rides SET availableSeats = availableSeats - 1 WHERE id = ?', [rideId]);
+        // Update availableSeats (decrement by 1)
+        db.query('UPDATE rides SET Available_seats =Available_seats - 1 WHERE id = ?', [rideId], (err) => {
+            if (err) {
+                throw new Error('Error updating available seats');
+            }
+        });
 
-        // Fetch driver details (assuming we have user details)
-        const [driverDetails] = await db.execute('SELECT * FROM userdetails WHERE id = ?', [ride.driverId]);
+        // Fetch driver details using the driverId
+        const [driverResults] = await db.promise().query('SELECT * FROM userdetails WHERE id = ?', [ride.driver_id]); // Match driver_id column
+        const driverDetails = driverResults[0]; // Extract the first driver from the result set
 
+        if (!driverDetails) {
+            return res.status(404).json({ message: 'Driver not found' });
+        }
+
+        // Return the response with ride and driver details
         res.json({
             message: 'Ride booked successfully',
-            rideDetails: ride,
-            driverDetails: driverDetails,
+            rideDetails: {
+                id: ride.id,
+                pickupLocation: ride.pickup_location, // Adjust to match your DB column
+                dropLocation: ride.drop_location, // Adjust to match your DB column
+                rideTime: ride.ride_time, // Adjust to match your DB column
+                availableSeats: ride.available_seats , // Reflect updated seats in the response
+                price: ride.price, // Adjust to match your DB column
+            },
+            driverDetails: {
+                id: driverDetails.id,
+                // Adjust to match your DB column
+                phone: driverDetails.phoneNumber, // Adjust to match your DB column
+                car: driverDetails.car, // Adjust to match your DB column
+                carNumber: driverDetails.carNumber, // Adjust to match your DB column
+            },
         });
     } catch (error) {
         console.error('Error booking ride:', error);

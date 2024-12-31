@@ -11,6 +11,29 @@ router.post('/search', matchRides); // Users can search for nearby rides based o
 
 // POST route to calculate the distance between two locations
 router.post('/calculate-distance', calculateDistance); // Calculate distance using latitude and longitude
+// In your routes (e.g., rideRoutes.js)
+router.get(':rideId/driver', async (req, res) => {
+    const { rideId } = req.params;
+    try {
+        const [ride] = await db.query('SELECT * FROM rides WHERE id = ?', [rideId]);
+
+        if (!ride) {
+            return res.status(404).json({ message: 'Ride not found' });
+        }
+
+        // Fetch driver details
+        const [driverDetails] = await db.execute('SELECT * FROM userdetails WHERE id = ?', [ride.driverId]);
+
+        if (!driverDetails) {
+            return res.status(404).json({ message: 'Driver not found' });
+        }
+
+        res.json({ driverDetails });
+    } catch (error) {
+        console.error('Error fetching driver details:', error);
+        res.status(500).json({ message: 'Error fetching driver details', error: error.message });
+    }
+});
 
 // POST route to book a ride (ensure the user is authenticated)
 router.post('/book-ride', bookRide);  // Apply the verifyToken middleware to ensure the user is logged in

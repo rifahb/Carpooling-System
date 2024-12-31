@@ -1,19 +1,58 @@
+
 import React, { useState } from 'react';
-import axios from 'axios';
-import RideSearchResult from './RideSearchResult';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 const RideSearch = () => {
+    const navigate = useNavigate();
+
+    // State variables to hold search results, messages, and user input
     const [pickup, setPickup] = useState('');
     const [dropoff, setDropoff] = useState('');
-    const [matchingRides, setMatchingRides] = useState([]);
     const [rideTime, setRideTime] = useState('');
+    const [matchingRides, setMatchingRides] = useState([]);
     const [message, setMessage] = useState('');
-    const navigate = useNavigate();
-    const handleBookRide = (rideId) => {
-        console.log(`Navigating to RideSearchResult with Ride ID: ${rideId}`);
-        // Navigate to RideSearchResult and pass ride ID as state
-        navigate('/ride-search-result', { state: { rideId, matchingRides } });
+
+    // Book ride function
+    const handleBookRide = async (rideId) => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('You must be logged in to book a ride.');
+            return;
+        }
+
+        const userId = localStorage.getItem('driverId');
+        if (!userId) {
+            alert('User ID is required.');
+            return;
+        }
+
+        try {
+            const response = await axios.post(
+                'http://localhost:5000/api/rides/book-ride',
+                { rideId, userId },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log('Booking successful:', response.data);
+
+            navigate('/ride-search-result', {
+                state: {
+                    rideDetails: response.data.rideDetails,
+                    driverDetails: response.data.driverDetails,
+                },
+            });
+        } catch (error) {
+            console.error('Error booking ride:', error);
+            alert('Error booking ride. Please try again later.');
+        }
     };
+
+    // Search rides function
     const handleSearch = async (e) => {
         e.preventDefault();
 
@@ -30,7 +69,7 @@ const RideSearch = () => {
 
         console.log('Request URL:', 'http://localhost:5000/api/rides/search');
         console.log('Request Headers:', { Authorization: `Bearer ${token}` });
-        console.log('Request Body:', { pickup, dropoff, rideTime: formattedRideTime }); // Sending UTC time
+        console.log('Request Body:', { pickup, dropoff, rideTime: formattedRideTime });
 
         try {
             const response = await axios.post(
@@ -57,53 +96,39 @@ const RideSearch = () => {
 
     return (
         <div>
-            <h3>Search for Rides</h3>
             <form onSubmit={handleSearch}>
-                <div>
-                    <label>Pickup Location:</label>
-                    <input
-                        type="text"
-                        placeholder="Pickup Location"
-                        value={pickup}
-                        onChange={(e) => setPickup(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Drop-off Location:</label>
-                    <input
-                        type="text"
-                        placeholder="Drop-off Location"
-                        value={dropoff}
-                        onChange={(e) => setDropoff(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Ride Time(24hr format):</label>
-                    <input
-                        type="datetime-local"
-                        value={rideTime}
-                        onChange={(e) => setRideTime(e.target.value)}
-                        required
-                    />
-                </div>
+                <input
+                    type="text"
+                    placeholder="Pickup Location"
+                    value={pickup}
+                    onChange={(e) => setPickup(e.target.value)}
+                />
+                <input
+                    type="text"
+                    placeholder="Dropoff Location"
+                    value={dropoff}
+                    onChange={(e) => setDropoff(e.target.value)}
+                />
+                <input
+                    type="datetime-local"
+                    value={rideTime}
+                    onChange={(e) => setRideTime(e.target.value)}
+                />
                 <button type="submit">Search</button>
             </form>
 
-            <h4>Matching Rides</h4>
             {message && <p>{message}</p>}
+
             <ul>
-    {matchingRides.map((ride, index) => {
-        // Convert UTC time to local time
-        const localRideTime = new Date(ride.ride_time).toLocaleString(); // This converts UTC to local time
-        return (
-            <li key={index}>
-                Pickup: {ride.pickup_location}, Drop-off: {ride.drop_location},
-                Available Seats: {ride.available_seats}, Time: {localRideTime}, Price: {ride.price}
-                <button onClick={() => handleBookRide(ride.id)}>Book</button>
-            </li>
-        );
+                {matchingRides.map((ride, index) => {
+                    const localRideTime = new Date(ride.ride_time).toLocaleString(); // Convert UTC to local time
+                    return (
+                        <li key={ride.id}>
+                            Pickup: {ride.pickup_location}, Drop-off: {ride.drop_location},
+                            Available Seats: {ride.available_seats}, Time: {localRideTime}, Price: {ride.price}
+                            <button onClick={() => handleBookRide(ride.id)}>Book Ride</button>
+                        </li>
+                    );
                 })}
             </ul>
         </div>

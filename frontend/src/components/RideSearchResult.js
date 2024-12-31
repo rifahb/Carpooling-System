@@ -3,31 +3,37 @@ import { useLocation } from 'react-router-dom';
 
 const RideSearchResult = () => {
     const location = useLocation();
-    const { matchingRides } = location.state || {};  // Destructure matchingRides from state
 
-    if (!matchingRides) {
-        return <p>No rides available.</p>;
+    // Get ride details and driver details passed via navigation
+    const { rideDetails, driverDetails } = location.state || {};
+
+    // Check if the necessary details exist
+    if (!rideDetails || !driverDetails) {
+        return <p>No ride details found.</p>;
     }
 
-    const rideId = location.state?.rideId;
-    const selectedRide = matchingRides.find((ride) => ride.id === rideId);
+    // Format the ride time (optional)
+    const formattedRideTime = new Date(rideDetails.rideTime).toLocaleString();
 
     return (
-        <div>
-            <h2>Ride Details</h2>
-            {selectedRide ? (
-                <div>
-                    <p>
-                        <strong>Pickup:</strong> {selectedRide.pickup_location} <br />
-                        <strong>Drop-off:</strong> {selectedRide.drop_location} <br />
-                        <strong>Available Seats:</strong> {selectedRide.available_seats} <br />
-                        <strong>Time:</strong> {new Date(selectedRide.ride_time).toLocaleString()} <br />
-                        <strong>Price:</strong> ${selectedRide.price}
-                    </p>
-                </div>
-            ) : (
-                <p>Ride not found.</p>
-            )}
+        <div className="ride-search-result">
+            <h1>Ride Booking Successful!</h1>
+
+            <div className="ride-details">
+                <h2>Ride Details</h2>
+                <p><strong>Pickup Location:</strong> {rideDetails.pickupLocation}</p>
+                <p><strong>Drop Location:</strong> {rideDetails.dropLocation}</p>
+                <p><strong>Ride Time:</strong> {formattedRideTime}</p>
+                <p><strong>Available Seats:</strong> {rideDetails.availableSeats}</p>
+                <p><strong>Price:</strong> ${rideDetails.price}</p>
+            </div>
+
+            <div className="driver-details">
+                <h2>Driver Details</h2>
+                <p><strong>Car:</strong> {driverDetails.car}</p>
+                <p><strong>Car Number:</strong> {driverDetails.carNumber}</p>
+                <p><strong>Phone:</strong> {driverDetails.phone}</p>
+            </div>
         </div>
     );
 };

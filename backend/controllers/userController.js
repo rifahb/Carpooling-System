@@ -140,26 +140,7 @@ exports.setUserDetails = async (req, res) => {
 
         // Database query
         console.log("Executing SELECT query...");
-        /*const [rows] = await db.execute('SELECT * FROM userdetails WHERE id = ?', [userId]);
-        console.log("Query result:", rows);
-
-        if (rows.length > 0) {
-            console.log("Updating user details...");
-            await db.execute(
-                'UPDATE userdetails SET phoneNumber = ?, car = ?, carNumber = ? WHERE id = ?',
-                [phoneNumber, car, carNumber, userId]
-            );
-            console.log("Update successful");
-            return res.json({ message: 'User details updated successfully.' });
-        } else {
-            console.log("Inserting new user details...");
-            await db.execute(
-                'INSERT INTO userdetails (id, phoneNumber, car, carNumber) VALUES (?, ?, ?, ?)',
-                [userId, phoneNumber, car, carNumber]
-            );
-            console.log("Insert successful");
-            return res.json({ message: 'User details added successfully.' });
-      */
+       
             db.query('SELECT * FROM userdetails WHERE id = ?', [userId], (err, rows) => {
                 if (err) {
                     console.error("Error fetching user details:", err);
