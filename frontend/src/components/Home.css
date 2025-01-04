@@ -118,12 +118,13 @@
 .home-nav {
     display: flex;
     justify-content: flex-end;
-    background-color: #e4572e; /* Red for navbar */
+    background-color: #e4572e; 
+    width:100%;/* Red for navbar */
     padding: 1rem;
     color: #fff;
 }
 
-.nav-link {
+.nav-link button{
     margin-right: 1.5rem;
     color: #f1e0c5; /* Light cream */
     text-decoration: none;
@@ -136,8 +137,9 @@
     color: #f3a712; /* Golden yellow */
 }
 
-.logout-button {
-    background-color: #e4572e; /* Red */
+.logout-button 
+{
+    background-color: #669bbc; /* Red */
     color: white;
     border: none;
     padding: 0.5rem 1rem;
@@ -147,6 +149,17 @@
     transition: background-color 0.3s ease;
 }
 
+.userbutton 
+{
+    background-color: #669bbc; /* Red */
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
 .logout-button:hover {
     background-color: #ff6f61; /* Lighter red */
 }

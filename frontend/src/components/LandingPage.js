@@ -5,24 +5,35 @@ import './LandingPage.css'; // Import CSS for styling
 const LandingPage = () => {
     return (
         <div className="landing-container">
-            <header className="landing-header">
-                <img src={require('../logo3.png')} alt="Logo" className="landing-logo" />
-                <h1>Welcome to CarKaro</h1>
-            </header>
+            {/* Blue Strip for Contact Info */}
+            <div className="top-bar">
+                <span className="contact-info">
+                    <a href="mailto:support@carkaro.com">support@carkaro.com</a> | <a href="tel:+1234567890">Call Now</a>
+                </span>
+            </div>
 
-            <div className="landing-content">
-                <p>Easy. Affordable. Sustainable.</p>
-                <div className="landing-buttons">
-                    <Link to="/login" className="landing-button">Login</Link>
-                    <Link to="/register" className="landing-button">Register</Link>
+            {/* Orange Strip for Logo and Buttons */}
+            <div className="navbar">
+                <img src={require('../logo3.png')} alt="CarKaro Logo" className="nav-logo" />
+                <div className="nav-links">
+                    <Link to="/login" className="nav-link">Login</Link>
+                    <Link to="/register" className="nav-link">Register</Link>
                 </div>
             </div>
 
-            <img
-                src={require('../bg.jpeg')} // Replace with your hero image path
-                alt="Carpooling"
-                className="landing-image"
-            />
+            {/* Hero Image Section */}
+            <div className="hero-section">
+                <img
+                    src={require('../bg.jpeg')} // Replace with your hero image path
+                    alt="Carpooling"
+                    className="hero-image"
+                />
+                <div className="hero-overlay">
+                    <h1>CarKaro</h1>
+                    <p>Where Every Ride Counts</p>
+                    <p>Easy. Affordable. Sustainable.</p>
+                </div>
+            </div>
         </div>
     );
 };

@@ -68,7 +68,7 @@ const SetUserDetails = () => {
                         required
                     />
                 </div>
-                <button type="submit" disabled={loading}>
+                <button className="setting" type="submit" disabled={loading}>
                     {loading ? 'Saving...' : 'Save Details'}
                 </button>
             </form>

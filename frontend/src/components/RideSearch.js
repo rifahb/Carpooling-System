@@ -1,7 +1,7 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './RideSearch.css'; // Import the CSS file
 
 const RideSearch = () => {
     const navigate = useNavigate();
@@ -67,10 +67,6 @@ const RideSearch = () => {
             return;
         }
 
-        console.log('Request URL:', 'http://localhost:5000/api/rides/search');
-        console.log('Request Headers:', { Authorization: `Bearer ${token}` });
-        console.log('Request Body:', { pickup, dropoff, rideTime: formattedRideTime });
-
         try {
             const response = await axios.post(
                 'http://localhost:5000/api/rides/search',
@@ -81,7 +77,7 @@ const RideSearch = () => {
                     },
                 }
             );
-            console.log('Response:', response.data);
+
             setMatchingRides(response.data.matchingRides);
             if (response.data.matchingRides.length === 0) {
                 setMessage('No rides found for the given locations.');
@@ -95,7 +91,8 @@ const RideSearch = () => {
     };
 
     return (
-        <div>
+        <div className="ride-search-container">
+            <h3>Search for a Ride</h3>
             <form onSubmit={handleSearch}>
                 <input
                     type="text"
@@ -117,15 +114,21 @@ const RideSearch = () => {
                 <button type="submit">Search</button>
             </form>
 
-            {message && <p>{message}</p>}
+            {message && <p className={message.includes('No rides') ? 'error' : 'success'}>{message}</p>}
 
             <ul>
-                {matchingRides.map((ride, index) => {
+                {matchingRides.map((ride) => {
                     const localRideTime = new Date(ride.ride_time).toLocaleString(); // Convert UTC to local time
                     return (
                         <li key={ride.id}>
-                            Pickup: {ride.pickup_location}, Drop-off: {ride.drop_location},
-                            Available Seats: {ride.available_seats}, Time: {localRideTime}, Price: {ride.price}
+                            <div>
+                                <strong>Pickup:</strong> {ride.pickup_location}, <strong>Drop-off:</strong>{' '}
+                                {ride.drop_location}
+                            </div>
+                            <div>
+                                <strong>Available Seats:</strong> {ride.available_seats}, <strong>Time:</strong>{' '}
+                                {localRideTime}, <strong>Price: Rs.</strong> {(ride.price*83).toFixed(2)}
+                            </div>
                             <button onClick={() => handleBookRide(ride.id)}>Book Ride</button>
                         </li>
                     );

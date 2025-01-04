@@ -49,6 +49,7 @@ const Home = () => {
         // Clear localStorage and navigate to login page
         localStorage.removeItem('token');
         localStorage.removeItem('driverId');
+        alert('Logged out successfully');
         navigate('/');
     };
 
@@ -57,7 +58,7 @@ const Home = () => {
             {/* Navbar */}
             <nav className="home-nav">
                 <Link to="/set-user-details" className="nav-link">
-                   <button> Set User Details</button>
+                   <button className="userbutton"> Set User Details</button>
                 </Link>
                 <button onClick={handleLogout} className="logout-button">
                     Logout

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-
+import './RideSearchResult.css'
 const RideSearchResult = () => {
     const location = useLocation();
 
@@ -15,25 +15,67 @@ const RideSearchResult = () => {
     // Format the ride time (optional)
     const formattedRideTime = new Date(rideDetails.rideTime).toLocaleString();
 
+    // Convert price from USD to INR
+    const convertedPrice = (rideDetails.price * 83).toFixed(2);
+
     return (
         <div className="ride-search-result">
             <h1>Ride Booking Successful!</h1>
 
-            <div className="ride-details">
-                <h2>Ride Details</h2>
-                <p><strong>Pickup Location:</strong> {rideDetails.pickupLocation}</p>
-                <p><strong>Drop Location:</strong> {rideDetails.dropLocation}</p>
-                <p><strong>Ride Time:</strong> {formattedRideTime}</p>
-                <p><strong>Available Seats:</strong> {rideDetails.availableSeats}</p>
-                <p><strong>Price:</strong> ${rideDetails.price}</p>
-            </div>
+            <table className="result-table">
+                <thead>
+                    <tr>
+                        <th>Detail</th>
+                        <th>Information</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Pickup Location</td>
+                        <td>{rideDetails.pickupLocation}</td>
+                    </tr>
+                    <tr>
+                        <td>Drop Location</td>
+                        <td>{rideDetails.dropLocation}</td>
+                    </tr>
+                    <tr>
+                        <td>Ride Time</td>
+                        <td>{formattedRideTime}</td>
+                    </tr>
+                    <tr>
+                        <td>Available Seats</td>
+                        <td>{rideDetails.availableSeats}</td>
+                    </tr>
+                    <tr>
+                        <td>Price</td>
+                        <td>₹{convertedPrice}</td>
+                    </tr>
+                </tbody>
+            </table>
 
-            <div className="driver-details">
-                <h2>Driver Details</h2>
-                <p><strong>Car:</strong> {driverDetails.car}</p>
-                <p><strong>Car Number:</strong> {driverDetails.carNumber}</p>
-                <p><strong>Phone:</strong> {driverDetails.phone}</p>
-            </div>
+            <h2>Driver Details</h2>
+            <table className="result-table">
+                <thead>
+                    <tr>
+                        <th>Detail</th>
+                        <th>Information</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Car</td>
+                        <td>{driverDetails.car}</td>
+                    </tr>
+                    <tr>
+                        <td>Car Number</td>
+                        <td>{driverDetails.carNumber}</td>
+                    </tr>
+                    <tr>
+                        <td>Phone</td>
+                        <td>{driverDetails.phone}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     );
 };
