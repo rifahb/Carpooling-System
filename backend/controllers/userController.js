@@ -182,3 +182,21 @@ exports.setUserDetails = async (req, res) => {
         return res.status(500).json({ message: 'Error saving user details', error: error.message });
     }
 };
+exports.getUserDetails = (req, res) => {
+    const driverId = req.params.id;
+  
+    const query = 'SELECT name FROM users WHERE id = ?';  // Assuming 'users' table has 'id' column
+    db.query(query, [driverId], (err, results) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        return res.status(500).json({ error: 'Database query failed' });
+      }
+  
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      const user = results[0];
+      res.json(user); // Returning the user details
+    });
+  };

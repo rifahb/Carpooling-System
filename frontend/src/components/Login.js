@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './Login.css'; // Import the CSS file
 
 const Login = ({ setToken, setUserName }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,8 +26,9 @@ const Login = ({ setToken, setUserName }) => {
                 localStorage.setItem('driverId', driverId); // Store driverId in localStorage
 
                 setToken(token);
-                setUserName(`Driver ${driverId}`);  // Save the driver ID (or a custom message) to state
+                setUserName(`Driver ${driverId}`); // Save the driver ID (or a custom message) to state
                 setMessage('Login successful!');
+                navigate('/home'); // Navigate to home on successful login
             } else {
                 setMessage('User not found or invalid response');
             }
@@ -35,26 +39,30 @@ const Login = ({ setToken, setUserName }) => {
     };
 
     return (
-        <div>
-            <h2>Login</h2>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <button type="submit">Login</button>
-            </form>
-            {message && <p>{message}</p>}
+        <div className="login-container">
+            <div className="overlay"></div> {/* To reduce the brightness of the background */}
+            <div className="login-box">
+                <h2>Login</h2>
+                <form onSubmit={handleSubmit}>
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                    <button type="submit" className="login-button">Login</button>
+                </form>
+                <button className="home-button" onClick={() => navigate('/home')}>Go to Home</button>
+                {message && <p className="message">{message}</p>}
+            </div>
         </div>
     );
 };

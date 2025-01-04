@@ -1,0 +1,94 @@
+/* General styles for the RideCreate component */
+body{
+    background-color: #29335c;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+}
+.ride-create-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #1a2533;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 20px auto;
+}
+
+/* Heading */
+.ride-create-container h3 {
+    font-family: 'Arial', sans-serif;
+    color: #e4572e;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Form elements */
+.ride-create-container form {
+    width: 100%;
+}
+
+/* Form group */
+.ride-create-container .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.ride-create-container label {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #f3a712;
+}
+
+.ride-create-container input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+/* Focus effect for inputs */
+.ride-create-container input:focus {
+    border-color: #4E73DF; /* Blue color on focus */
+    box-shadow: 0 0 5px rgba(78, 115, 223, 0.5);
+}
+
+/* Submit button */
+.ride-create-container button {
+    background-color: #e4572e; 
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* Hover effect for the button */
+.ride-create-container button:hover {
+    background-color: #2a4c9c; /* Darker blue on hover */
+}
+
+/* Message display */
+.ride-create-container p {
+    color: #333;
+    font-size: 16px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.ride-create-container .error {
+    color: #e74c3c; /* Red color for error messages */
+}
+
+.ride-create-container .success {
+    color: #2ecc71; /* Green color for success messages */
+}

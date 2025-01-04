@@ -1,0 +1,74 @@
+/* Background overlay to dim the app */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Black overlay with 50% opacity */
+    z-index: 1; /* Place it below the register box */
+}
+
+/* Center the register box */
+.register-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2; /* Place it above the overlay */
+}
+
+/* Register box styling */
+.register-box {
+    background:  #29335C;
+    color:#F3A712;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 3;
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+}
+
+/* Input fields */
+input {
+    display: block;
+    width: 100%;
+    margin: 1rem 0;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color:#d3c3a2;
+}
+
+.login-button,
+.register-button {
+    background-color: #e4572e;
+    color: white;
+    border: none;
+    width: 150px;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.login-button:hover,
+.register-button:hover {
+    background-color: #f3a712;
+}
+
+.message {
+    margin-top: 1rem;
+    color: #e4572e;
+    font-size: 0.9rem;
+}

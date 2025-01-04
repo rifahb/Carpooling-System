@@ -1,34 +1,15 @@
-/*import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';  // Correct import
-import Navbar from './components/Navbar';
-import RideSearch from './components/RideSearch';
-import RideBooking from './components/RideBooking';
-import RideCreate from './components/RideCreate';
-const App = () => {
-    return (
-        <Router>
-            <Navbar />
-            <Routes>  { Use Routes here */
-              /*  <Route path="/" element={<h1>Welcome to the Carpooling System</h1>} />
-                <Route path="/search" element={<RideSearch />} />
-                <Route path="/book/:rideId" element={<RideBooking />} />
-                <Route path="/create" element={<RideCreate />} />  {/* Add the new route */
-            /*</Routes>
-        </Router>
-    );
-};
-
-export default App;*/
-import React, { useState,useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link ,Navigate} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import Register from './components/Register';
 import Home from './components/Home';
-import RideCreate from './components/RideCreate';  // If you have this component
-import RideSearch from './components/RideSearch'; 
+import RideCreate from './components/RideCreate';
+import RideSearch from './components/RideSearch';
 import RideSearchResult from './components/RideSearchResult';
 import ConfirmationPage from './components/ConfirmationPage';
 import SetUserDetails from './components/SetUserDetails';
+import LandingPage from './components/LandingPage';
+
 const App = () => {
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
@@ -37,34 +18,39 @@ const App = () => {
     useEffect(() => {
         // Example API call to fetch matching rides
         const fetchRides = async () => {
-            const response = await fetch('/api/rides');
-            const data = await response.json();
-            setMatchingRides(data);
+            try {
+                const response = await fetch('/api/rides');
+                const data = await response.json();
+                setMatchingRides(data);
+            } catch (error) {
+                console.error("Error fetching rides:", error);
+            }
         };
 
         fetchRides();
     }, []);
+
     return (
         <Router>
             <div>
-                <nav>
-                    <Link to="/home">Home</Link>
-                    <Link to="/login">Login</Link>
-                    <Link to="/register">Register</Link>
-                </nav>
                 <Routes>
+                    {/* Landing Page Route */}
+                    <Route
+                        path="/"
+                        element={token ? <Navigate to="/home" /> : <LandingPage />}
+                    />
+
+                    {/* Login and Register Routes */}
                     <Route path="/login" element={<Login setToken={setToken} setUserName={setUserName} />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/home" element={token ? <Home userName={userName} /> : <Navigate to="/login" />} />
-                    <Route path="/create" element={token ? <RideCreate /> : <Navigate to="/login" />} />
-                    <Route path="/search" element={token ? <RideSearch /> : <Navigate to="/login" />} />
-                    <Route path="/set-user-details" element={<SetUserDetails />} /> 
-                    <Route path="/ride-search-result" element={<RideSearchResult matchingRides={matchingRides} />} />
 
-
-                <Route path="/ride-search" element={<RideSearchResult/>} />
-                <Route path="/confirmation" element={<ConfirmationPage/>} />
-            
+                    {/* Protected Routes */}
+                    <Route path="/home" element={token ? <Home userName={userName} /> : <Navigate to="/" />} />
+                    <Route path="/create" element={token ? <RideCreate /> : <Navigate to="/" />} />
+                    <Route path="/search" element={token ? <RideSearch /> : <Navigate to="/" />} />
+                    <Route path="/set-user-details" element={token ? <SetUserDetails /> : <Navigate to="/" />} />
+                    <Route path="/ride-search-result" element={token ? <RideSearchResult matchingRides={matchingRides} /> : <Navigate to="/" />} />
+                    <Route path="/confirmation" element={token ? <ConfirmationPage /> : <Navigate to="/" />} />
                 </Routes>
             </div>
         </Router>

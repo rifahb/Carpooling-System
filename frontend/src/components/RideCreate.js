@@ -1,44 +1,38 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-
-
+import './RideCreate.css'; // Import the CSS
 
 const RideCreate = () => {
     const [pickupLocation, setPickupLocation] = useState('');
     const [dropOffLocation, setDropOffLocation] = useState('');
     const [availableSeats, setAvailableSeats] = useState('');
-    const [rideTime, setRideTime] = useState(''); // New state for ride time
-
+    const [rideTime, setRideTime] = useState('');
     const [message, setMessage] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const localDate = new Date(rideTime); // This gets the input as local time
-        const offset = 5.5 * 60 * 60 * 1000; // IST is UTC + 5:30 hours
-        const istDate = new Date(localDate.getTime() + offset); // Add IST offset
-        const istISOString = istDate.toISOString(); // Convert to ISO string
+        const localDate = new Date(rideTime);
+        const offset = 5.5 * 60 * 60 * 1000; // IST offset
+        const istDate = new Date(localDate.getTime() + offset);
+        const istISOString = istDate.toISOString();
         const driverId = localStorage.getItem('driverId');
         const token = localStorage.getItem('token');
+        
         if (!token) {
             setMessage('You must be logged in to create a ride.');
             return;
         }
-        console.log('Submitted Data:', { token,driverId,pickupLocation, dropOffLocation, availableSeats,rideTime });
-        console.log('Request URL:', 'http://localhost:5000/api/rides/search');
-        console.log('Request Headers:', { Authorization: `Bearer ${token}` });
-       // console.log('Request Body:', { pickup, dropoff, rideTime: istISOString });
         if (!driverId) {
-        setMessage('Driver ID not found.');
-        return;
-    }
-        try {
-            console.log('Submitted Data:', { pickupLocation, dropOffLocation, availableSeats });
-            const formattedRideTime = rideTime.replace('T', ' ').split('.')[0]; // Convert to 'YYYY-MM-DD HH:MM:SS'
+            setMessage('Driver ID not found.');
+            return;
+        }
 
+        try {
+            const formattedRideTime = rideTime.replace('T', ' ').split('.')[0];
             const response = await axios.post(
                 'http://localhost:5000/api/rides/create',
                 {
-                    driverId, // Replace with dynamic driver ID if available
+                    driverId,
                     pickupLocation,
                     dropOffLocation,
                     availableSeats,
@@ -68,11 +62,10 @@ const RideCreate = () => {
     };
 
     return (
-        <div>
+        <div className="ride-create-container">
             <h3>Create a New Ride</h3>
             <form onSubmit={handleSubmit}>
-           
-                <div>
+                <div className="form-group">
                     <label>Pickup Location:</label>
                     <input
                         type="text"
@@ -81,7 +74,7 @@ const RideCreate = () => {
                         required
                     />
                 </div>
-                <div>
+                <div className="form-group">
                     <label>Drop-off Location:</label>
                     <input
                         type="text"
@@ -90,7 +83,7 @@ const RideCreate = () => {
                         required
                     />
                 </div>
-                <div>
+                <div className="form-group">
                     <label>Available Seats:</label>
                     <input
                         type="number"
@@ -100,10 +93,10 @@ const RideCreate = () => {
                         required
                     />
                 </div>
-                <div>
-                    <label>Ride Time:</label> {/* New input for ride time */}
+                <div className="form-group">
+                    <label>Ride Time:</label>
                     <input
-                        type="datetime-local" // This creates a date-time picker
+                        type="datetime-local"
                         value={rideTime}
                         onChange={(e) => setRideTime(e.target.value)}
                         required
@@ -111,8 +104,7 @@ const RideCreate = () => {
                 </div>
                 <button type="submit">Create Ride</button>
             </form>
-
-            {message && <p>{message}</p>}
+            {message && <p className={message.includes('success') ? 'success' : 'error'}>{message}</p>}
         </div>
     );
 };

@@ -1,0 +1,209 @@
+/*
+.home-container {
+    display: flex;
+    flex-direction: column;
+    background-color: #f1e0c5;
+    height: 100vh;
+    background-color: #29335c;
+   
+    font-family: 'Roboto', sans-serif;
+}
+
+
+.home-nav {
+    display: flex;
+    justify-content: flex-end;
+    background-color: #29335c; /* Dark blue 
+    padding: 1rem;
+    color: #fff;
+    background-color: #e4572e;
+}*/
+/* 
+.nav-link {
+    margin-right: 1.5rem;
+    color: #f1e0c5; /* Light cream 
+    text-decoration: none;
+    background-color: #e4572e;
+
+    font-size: 1rem;
+    font-weight: bold;
+    transition: color 0.3s;
+} 
+
+.nav-link:hover {
+    color: #f3a712; /* Golden yellow 
+}
+
+.logout-button {
+    background-color: #e4572e; /* Red 
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+    background-color: #ff6f61;
+}
+
+/* Welcome Section 
+.welcome-section {
+    color: #e4572e;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    text-align: center;
+}
+
+/* Home content layout 
+.home-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    max-width: 1200px;
+    margin: 2rem auto;
+}
+
+/* Image section 
+.home-image img {
+    max-width: 700px;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Buttons section 
+.home-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.home-button {
+    background-color: #669bbc; /* Blue 
+    color: white;
+    text-decoration: none;
+    padding: 1rem 2rem;
+    font-size: 1.5rem;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+.home-button:hover {
+    background-color: #29335c; /* Light green 
+}
+*/
+/* Main container styling */
+.home-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #29335c; /* Dark blue */
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Navbar styling */
+.home-nav {
+    display: flex;
+    justify-content: flex-end;
+    background-color: #e4572e; /* Red for navbar */
+    padding: 1rem;
+    color: #fff;
+}
+
+.nav-link {
+    margin-right: 1.5rem;
+    color: #f1e0c5; /* Light cream */
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: #f3a712; /* Golden yellow */
+}
+
+.logout-button {
+    background-color: #e4572e; /* Red */
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+    background-color: #ff6f61; /* Lighter red */
+}
+
+/* Welcome Section */
+.welcome-section {
+    color: #f1e0c5; /* Light cream */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    text-align: center;
+    padding: 2rem;
+}
+
+/* Home content layout */
+.home-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    max-width: 1200px;
+    margin: 2rem auto;
+}
+
+/* Image section */
+.home-image img {
+    max-width: 700px;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Buttons section */
+.home-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.home-button {
+    background-color: #669bbc; /* Blue */
+    color: white;
+    text-decoration: none;
+    padding: 1rem 2rem;
+    font-size: 1.5rem;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+.home-button:hover {
+    background-color: #29335c; /* Dark blue */
+}
