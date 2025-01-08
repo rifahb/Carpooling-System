@@ -11,10 +11,23 @@ const pool = mysql.createPool({
 // SQL query to create the view
 const createViewQuery = `
     CREATE VIEW ActiveRides AS
-    SELECT Rides.id AS rideId, Rides.driver_id, Rides.pickup_location, Rides.drop_location, Rides.available_seats
-    FROM Rides
-    WHERE Rides.available_seats > 0;
+    SELECT 
+        Rides.id AS rideId, 
+        Rides.driver_id, 
+        Rides.pickup_location, 
+        Rides.drop_location, 
+        Rides.available_seats, 
+        userdetails.phoneNumber AS phoneNo
+    FROM 
+        Rides
+    JOIN 
+        userdetails 
+    ON 
+        Rides.driver_id = userdetails.id
+    WHERE 
+        Rides.available_seats > 0;
 `;
+
 
 // Execute the query
 pool.query(createViewQuery, (err, results) => {
@@ -26,14 +39,15 @@ pool.query(createViewQuery, (err, results) => {
 });
 // SQL query to create the trigger
 const createTriggerQuery = `
-    CREATE TRIGGER UpdateRideSeats
-    AFTER INSERT ON Bookings
-    FOR EACH ROW
-    BEGIN
-        UPDATE Rides
-        SET available_seats = available_seats - 1
-        WHERE id = NEW.rideId;
-    END;
+CREATE TRIGGER CheckAvailableSeats
+BEFORE UPDATE ON rides
+FOR EACH ROW
+BEGIN
+    IF NEW.Available_seats < 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Available seats cannot be negative.';
+    END IF;
+END;
 `;
 
 // Execute the query to create the trigger

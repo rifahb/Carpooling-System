@@ -18,7 +18,9 @@ const Login = ({ setToken, setUserName }) => {
             // Log the response to inspect its structure
             console.log('Response Data:', response.data);
 
-            const { token, driverId } = response.data; // Destructure to get token and driverId
+            const { token, driverId } = response.data; 
+            await axios.delete('http://localhost:5000/api/rides/deleteExpiredRides');
+            console.log('Expired rides deleted successfully');// Destructure to get token and driverId
 
             if (token && driverId) {
                 // Store token and driverId in localStorage and state

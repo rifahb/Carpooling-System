@@ -158,7 +158,7 @@ exports.bookRide = async (req, res) => {
         }
 
         // Update availableSeats (decrement by 1)
-        db.query('UPDATE rides SET Available_seats =Available_seats - 1 WHERE id = ?', [rideId], (err) => {
+        db.promise().query('UPDATE rides SET Available_seats =Available_seats - 1 WHERE id = ?', [rideId], (err) => {
             if (err) {
                 throw new Error('Error updating available seats');
             }
@@ -195,4 +195,28 @@ exports.bookRide = async (req, res) => {
         console.error('Error booking ride:', error);
         res.status(500).json({ message: 'Error booking ride', error: error.message });
     }
+};
+// controllers/rideController.js
+const connection = require('../db'); // Your MySQL connection file
+
+exports.deleteExpiredRides = (req, res) => {
+    const currentTime = new Date().toISOString().slice(0, 19).replace('T', ' '); // Current time in MySQL format
+
+    const query = 'DELETE FROM rides WHERE Ride_time < ?';
+
+    connection.query(query, [currentTime], (err, result) => {
+        if (err) {
+            console.error('Error deleting expired rides:', err);
+            return res.status(500).send('Failed to delete expired rides');
+        }
+    
+        else {
+            console.log(result); // Log the result to see how many rows were affected
+            if (result.affectedRows > 0) {
+                res.send({ message: `${result.affectedRows} expired rides deleted successfully` });
+            } else {
+                res.send({ message: 'No expired rides found to delete' });
+            }
+        }
+    });
 };
